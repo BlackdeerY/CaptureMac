@@ -1,0 +1,32 @@
+plugins {
+	id 'org.springframework.boot' version '2.3.0.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'java'
+}
+
+group = 'blackdeer.capturemac'
+version = '1.0.0'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
+/*
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+*/
+	
+	// Global Hotkey
+	// https://mvnrepository.com/artifact/com.1stleg/jnativehook
+	compile group: 'com.1stleg', name: 'jnativehook', version: '2.1.0'
+}
+
+test {
+/*
+	useJUnitPlatform()
+*/
+}
