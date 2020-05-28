@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,31 +26,21 @@ public class Application {
 	private static class GlobalMouseMotionListener implements NativeMouseMotionListener {
 		@Override
 		public void nativeMouseMoved(NativeMouseEvent e) {
-			if (thread == null) {
-				thread = new Thread() {
-					@Override
-					public void run() {
-						mousePosition[0] = e.getX();
-						mousePosition[1] = e.getY();
-						// 캡처한 이미지가 있고, 고정상태가 아니고, 숨기지 않았을 때에 캡처 이미지가 마우스를 따라다님.
-						if (viewWindow.captureRegion.imageCaptured != null && moving == true && hiding == false) {
-							viewWindow.setVisible(true);
-							viewWindow.setLocation(mousePosition[0] + 10, mousePosition[1] + 20);
-						} else if (captureStart == true) {
-							viewWindow.captureRegion.setSize((int)(((float)(mousePosition[0] - viewWindow.captureRegion.mouseCapture[0])) / viewWindow.captureRegion.forScale),
-									(int)(((float)(mousePosition[1] - viewWindow.captureRegion.mouseCapture[1])) / viewWindow.captureRegion.forScale));
-						}
-						try {
-							sleep(10);
-						} catch (InterruptedException e1) {
-							e1.printStackTrace();
-						}
-						if (thread == this) {
-							thread = null;
-						}
+			if (timing.compareAndSet(false, true)) {
+				mousePosition[0] = e.getX();
+				mousePosition[1] = e.getY();
+				if (viewWindow.captureRegion.imageCaptured != null && moving == true && hiding == false) {
+					viewWindow.setVisible(true);
+					viewWindow.setLocation(e.getX() + 10, e.getY() + 20);
+				} else if (captureStart == true) {
+					viewWindow.captureRegion.setSize((int)(((float)(e.getX() - viewWindow.captureRegion.mouseCapture[0])) / viewWindow.captureRegion.forScale),
+							(int)(((float)(e.getY() - viewWindow.captureRegion.mouseCapture[1])) / viewWindow.captureRegion.forScale));
+				}
+				while (true) {
+					if (timing.compareAndSet(true, false)) {
+						break;
 					}
-				};
-				thread.start();
+				}
 			}
 		}
 		
@@ -187,7 +178,7 @@ public class Application {
 	private static ViewWindow viewWindow;
 	private static String dirDownloads;
 	private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HH;mm;ss");
-	public static Thread thread = null;
+	public static AtomicBoolean timing = new AtomicBoolean(false);
 	
 	public static void main(String[] args) {
 		System.setProperty("file.encoding", "UTF-8");
@@ -208,5 +199,7 @@ public class Application {
 		viewWindow = new ViewWindow();
 		GlobalScreen.addNativeMouseMotionListener(new GlobalMouseMotionListener());
 		GlobalScreen.addNativeKeyListener(new GlobalKeyListner());
+		
+		System.out.println("============================================================\nCaptureMac - https://github.com/BlackdeerY/CaptureMac\n------------------------------------------------------------\nLCtrl + LCommand: Decide Capture Region and Capture Image.\nLShift or RShift: Fix/Move Captured Image.\n`: Hide/Show Captured Image.\nesc: Dispose Captured Image.\nLCtrl + F11: Save Captured Image to ~/Downloads.\nLCtrl + F12: Save Image of Fullscreen to ~/Downloads.\n============================================================");
 	}
 }
