@@ -177,10 +177,10 @@ public class Application {
 				if (hiding == true) {
 					viewWindow.setVisible(false);
 				} else {
-					viewWindow.setVisible(true);
 					if (moving == true) {
 						viewWindow.setLocation(mousePosition[0] + 10, mousePosition[1] + 20);
 					}
+					viewWindow.setVisible(true);
 				}
 			// Ctrl + F12: 전체화면을 이미지로 저장
 			} else if (mod == 40962 && key == 111) {
