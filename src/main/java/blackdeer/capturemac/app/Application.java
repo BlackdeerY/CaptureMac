@@ -1,6 +1,8 @@
 package blackdeer.capturemac.app;
 
 import java.awt.GraphicsEnvironment;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
@@ -20,9 +22,48 @@ import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 import org.jnativehook.mouse.NativeMouseEvent;
+import org.jnativehook.mouse.NativeMouseInputListener;
 import org.jnativehook.mouse.NativeMouseMotionListener;
 
 public class Application {
+	@SuppressWarnings("unused")
+	private static class GlobalMouseInputListner implements NativeMouseInputListener {
+		@Override
+		public void nativeMouseClicked(NativeMouseEvent nativeEvent) {
+		}
+		@Override
+		public void nativeMousePressed(NativeMouseEvent nativeEvent) {
+		}
+		@Override
+		public void nativeMouseReleased(NativeMouseEvent nativeEvent) {
+		}
+
+		@Override
+		public void nativeMouseMoved(NativeMouseEvent e) {
+			if (timing.compareAndSet(false, true)) {
+				mousePosition[0] = e.getX();
+				mousePosition[1] = e.getY();
+				if (viewWindow.captureRegion.imageCaptured != null && moving == true && hiding == false) {
+					viewWindow.setVisible(true);
+					viewWindow.setLocation(e.getX() + 10, e.getY() + 20);
+				} else if (captureStart == true) {
+					viewWindow.captureRegion.setSize((int)(((float)(e.getX() - viewWindow.captureRegion.mouseCapture[0])) / viewWindow.captureRegion.forScale),
+							(int)(((float)(e.getY() - viewWindow.captureRegion.mouseCapture[1])) / viewWindow.captureRegion.forScale));
+				}
+				while (true) {
+					if (timing.compareAndSet(true, false)) {
+						break;
+					}
+				}
+			}
+		}
+
+		@Override
+		public void nativeMouseDragged(NativeMouseEvent nativeEvent) {
+		}
+	}
+	
+	@SuppressWarnings("unused")
 	private static class GlobalMouseMotionListener implements NativeMouseMotionListener {
 		@Override
 		public void nativeMouseMoved(NativeMouseEvent e) {
@@ -197,8 +238,40 @@ public class Application {
 		} catch(Exception e) {
 		}
 		viewWindow = new ViewWindow();
-		GlobalScreen.addNativeMouseMotionListener(new GlobalMouseMotionListener());
+		//GlobalScreen.addNativeMouseMotionListener(new GlobalMouseMotionListener());
+		//GlobalScreen.addNativeMouseMotionListener(new GlobalMouseInputListner());
 		GlobalScreen.addNativeKeyListener(new GlobalKeyListner());
+		
+		new Thread() {
+			@Override
+			public void run() {
+				while (true) {
+					if (timing.compareAndSet(false, true)) {
+						Point mouse = MouseInfo.getPointerInfo().getLocation();
+						mousePosition[0] = mouse.x;
+						mousePosition[1] = mouse.y;
+						if (viewWindow.captureRegion.imageCaptured != null && moving == true && hiding == false) {
+							viewWindow.setVisible(true);
+							viewWindow.setLocation(mouse.x + 10, mouse.y + 20);
+						} else if (captureStart == true) {
+							viewWindow.captureRegion.setSize((int)(((float)(mouse.x - viewWindow.captureRegion.mouseCapture[0])) / viewWindow.captureRegion.forScale),
+									(int)(((float)(mouse.y - viewWindow.captureRegion.mouseCapture[1])) / viewWindow.captureRegion.forScale));
+						}
+						try {
+							sleep(100);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						while (true) {
+							if (timing.compareAndSet(true, false)) {
+								break;
+							}
+						}
+					}
+				}
+			};
+		}.start();
 		
 		System.out.println("============================================================\nCaptureMac - https://github.com/BlackdeerY/CaptureMac\n------------------------------------------------------------\nLCtrl + LCommand: Decide Capture Region and Capture Image.\nLShift or RShift: Fix/Move Captured Image.\n`: Hide/Show Captured Image.\nesc: Dispose Captured Image.\nLCtrl + F11: Save Captured Image to ~/Downloads.\nLCtrl + F12: Save Image of Fullscreen to ~/Downloads.\n============================================================");
 	}
