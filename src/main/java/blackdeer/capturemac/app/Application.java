@@ -62,7 +62,7 @@ public class Application {
 		public void nativeMouseDragged(NativeMouseEvent nativeEvent) {
 		}
 	}
-	
+
 	@SuppressWarnings("unused")
 	private static class GlobalMouseMotionListener implements NativeMouseMotionListener {
 		@Override
@@ -84,12 +84,12 @@ public class Application {
 				}
 			}
 		}
-		
+
 		@Override
 		public void nativeMouseDragged(NativeMouseEvent e) {
 		}
 	}
-	
+
 	private static class GlobalKeyListner implements NativeKeyListener {
 		@Override
 		public void nativeKeyPressed(NativeKeyEvent e) {
@@ -102,9 +102,9 @@ public class Application {
 					viewWindow.captureRegion.mouseCapture[0] = mousePosition[0];
 					viewWindow.captureRegion.mouseCapture[1] = mousePosition[1];
 					viewWindow.captureRegion.forScale = (float)(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth())
-														/ (float)(Toolkit.getDefaultToolkit().getScreenSize().getWidth());
+							/ (float)(Toolkit.getDefaultToolkit().getScreenSize().getWidth());
 					viewWindow.captureRegion.setLocation((int)((float)(viewWindow.captureRegion.mouseCapture[0]) / viewWindow.captureRegion.forScale),
-														(int)((float)(viewWindow.captureRegion.mouseCapture[1]) / viewWindow.captureRegion.forScale));
+							(int)((float)(viewWindow.captureRegion.mouseCapture[1]) / viewWindow.captureRegion.forScale));
 					viewWindow.captureRegion.setVisible(true);
 					captureStart = true;
 				} else if (viewWindow.captureRegion.imageCaptured != null && captureStart == false && hiding == true) {
@@ -113,19 +113,19 @@ public class Application {
 					viewWindow.setSize(0, 0);
 					viewWindow.setLocation(-1, -1);
 					viewWindow.setVisible(false);
-					
+
 					viewWindow.captureRegion.mouseCapture[0] = mousePosition[0];
 					viewWindow.captureRegion.mouseCapture[1] = mousePosition[1];
 					viewWindow.captureRegion.forScale = (float)(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth())
-														/ (float)(Toolkit.getDefaultToolkit().getScreenSize().getWidth());
+							/ (float)(Toolkit.getDefaultToolkit().getScreenSize().getWidth());
 					viewWindow.captureRegion.setLocation((int)((float)(viewWindow.captureRegion.mouseCapture[0]) / viewWindow.captureRegion.forScale),
-														(int)((float)(viewWindow.captureRegion.mouseCapture[1]) / viewWindow.captureRegion.forScale));
+							(int)((float)(viewWindow.captureRegion.mouseCapture[1]) / viewWindow.captureRegion.forScale));
 					viewWindow.captureRegion.setVisible(true);
 					captureStart = true;
 				}
 			}
 		}
-		
+
 		@Override
 		public void nativeKeyReleased(NativeKeyEvent e) {
 			int mod = e.getModifiers();
@@ -161,17 +161,17 @@ public class Application {
 					} catch (Exception ex) {
 					}
 				}
-			// esc: ƒ∏√≥ ¿ÃπÃ¡ˆ ªË¡¶
+				// esc: Ï∫°Ï≤ò Ïù¥ÎØ∏ÏßÄ ÏÇ≠Ï†ú
 			} else if (viewWindow.captureRegion.imageCaptured != null && mod == 40960 && key == 53) {
 				viewWindow.captureRegion.imageCaptured = null;
 				viewWindow.image_View.setSize(0, 0);
 				viewWindow.setSize(0, 0);
 				viewWindow.setLocation(-1, -1);
 				viewWindow.setVisible(false);
-			// LShift, RShift: ƒ∏√≥ ¿ÃπÃ¡ˆ «ˆ¿Á ¿ßƒ°ø° ∞Ì¡§/«ÿ¡¶
+				// LShift, RShift: Ï∫°Ï≤ò Ïù¥ÎØ∏ÏßÄ ÌòÑÏû¨ ÏúÑÏπòÏóê Í≥†Ï†ï/Ìï¥Ï†ú
 			} else if (viewWindow.captureRegion.imageCaptured != null && mod == 40960 && (key == 56 || key == 60)) {
 				moving = !moving;
-			// `: ƒ∏√≥ ¿ÃπÃ¡ˆ º˚±‚±‚/∫∏¿Ã±‚
+				// `: Ï∫°Ï≤ò Ïù¥ÎØ∏ÏßÄ Ïà®Í∏∞Í∏∞/Î≥¥Ïù¥Í∏∞
 			} else if (viewWindow.captureRegion.imageCaptured != null && mod == 40960 && key == 50) {
 				hiding = !hiding;
 				if (hiding == true) {
@@ -182,7 +182,7 @@ public class Application {
 					}
 					viewWindow.setVisible(true);
 				}
-			// Ctrl + F12: ¿¸√º»≠∏È¿ª ¿ÃπÃ¡ˆ∑Œ ¿˙¿Â
+				// Ctrl + F12: Ï†ÑÏ≤¥ÌôîÎ©¥ÏùÑ Ïù¥ÎØ∏ÏßÄÎ°ú Ï†ÄÏû•
 			} else if (mod == 40962 && key == 111) {
 				Date date = new Date();
 				String time = simpleDateFormat.format(date);
@@ -193,7 +193,7 @@ public class Application {
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
-			// Ctrl + F11: ƒ∏√≥ ¿ÃπÃ¡ˆ∏∏  ¿˙¿Â
+				// Ctrl + F11: Ï∫°Ï≤ò Ïù¥ÎØ∏ÏßÄÎßå  Ï†ÄÏû•
 			} else if (viewWindow.captureRegion.imageCaptured != null && mod == 40962 && key == 103) {
 				Date date = new Date();
 				String time = simpleDateFormat.format(date);
@@ -204,14 +204,14 @@ public class Application {
 					ex.printStackTrace();
 				}
 			}
-			
+
 		}
-		
+
 		@Override
 		public void nativeKeyTyped(NativeKeyEvent e) {
 		}
 	}
-	
+
 	private static int[] mousePosition = new int[4];
 	private static boolean captureStart = false;
 	private static boolean moving = false;
@@ -220,12 +220,12 @@ public class Application {
 	private static String dirDownloads;
 	private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HH;mm;ss");
 	public static AtomicBoolean timing = new AtomicBoolean(false);
-	
+
 	public static void main(String[] args) {
 		System.setProperty("file.encoding", "UTF-8");
 		dirDownloads = System.getProperty("user.home") + "/Downloads/";
 		System.out.println(dirDownloads);
-		try { 
+		try {
 			GlobalScreen.registerNativeHook();
 		} catch (NativeHookException e) {
 			System.exit(1);
@@ -241,7 +241,7 @@ public class Application {
 		//GlobalScreen.addNativeMouseMotionListener(new GlobalMouseMotionListener());
 		//GlobalScreen.addNativeMouseMotionListener(new GlobalMouseInputListner());
 		GlobalScreen.addNativeKeyListener(new GlobalKeyListner());
-		
+
 		new Thread() {
 			@Override
 			public void run() {
@@ -272,7 +272,7 @@ public class Application {
 				}
 			};
 		}.start();
-		
+
 		System.out.println("============================================================\nCaptureMac - https://github.com/BlackdeerY/CaptureMac\n------------------------------------------------------------\nLCtrl + LCommand: Decide Capture Region and Capture Image.\nLShift or RShift: Fix/Move Captured Image.\n`: Hide/Show Captured Image.\nesc: Dispose Captured Image.\nLCtrl + F11: Save Captured Image to ~/Downloads.\nLCtrl + F12: Save Image of Fullscreen to ~/Downloads.\n============================================================");
 	}
 }
