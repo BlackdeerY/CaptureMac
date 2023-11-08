@@ -22,7 +22,7 @@ dependencies {
 	
 	// Global Hotkey
 	// https://mvnrepository.com/artifact/com.1stleg/jnativehook
-	compile group: 'com.1stleg', name: 'jnativehook', version: '2.1.0'
+	implementation group: 'com.github.kwhat', name: 'jnativehook', version: '2.2.2'
 }
 
 test {
