@@ -1,11 +1,8 @@
 package blackdeer.capturemac.app;
 
-import java.awt.GraphicsEnvironment;
-import java.awt.MouseInfo;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.MultiResolutionImage;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -96,8 +93,8 @@ public class Application {
 			int mod = e.getModifiers();
 			// 10: Windows LCtrl + LAlt 
 			// 40966: Mac LCtrl + LCommand
-			// 1310729: Mac VNC LCtrl + LCommand
-			if(captureStart == false && mod == 40966) {
+            // 1310729: Mac VNC LCtrl + LCommand
+            if(captureStart == false && (mod == 6 || mod == 40966)) {
 				if(viewWindow.captureRegion.imageCaptured == null && captureStart == false) {
 					viewWindow.captureRegion.mouseCapture[0] = mousePosition[0];
 					viewWindow.captureRegion.mouseCapture[1] = mousePosition[1];
@@ -132,7 +129,7 @@ public class Application {
 			int key = e.getRawCode();
 			//System.out.println("mod: " + mod + " / key: " + key);
 			//if(captureStart == true && mod != 10) {
-			if(captureStart == true && mod != 40966) {
+			if(captureStart == true && mod != 6 && mod != 40966) {
 				captureStart = false;
 				viewWindow.captureRegion.mouseCapture[2] = mousePosition[0];
 				viewWindow.captureRegion.mouseCapture[3] = mousePosition[1];
@@ -146,7 +143,15 @@ public class Application {
 								viewWindow.captureRegion.mouseCapture[1],
 								viewWindow.captureRegion.mouseCapture[2] - viewWindow.captureRegion.mouseCapture[0],
 								viewWindow.captureRegion.mouseCapture[3] - viewWindow.captureRegion.mouseCapture[1]);
-						viewWindow.captureRegion.imageCaptured = viewWindow.captureRegion.robot.createScreenCapture(viewWindow.captureRegion.rectangle);
+
+//                        MultiResolutionImage multiResolutionImage = viewWindow.captureRegion.robot.createMultiResolutionScreenCapture(viewWindow.captureRegion.rectangle);
+//                        Image image = multiResolutionImage.getResolutionVariant(1920, 1080);
+//                        BufferedImage bufferedImage = new BufferedImage(viewWindow.captureRegion.rectangle.width, viewWindow.captureRegion.rectangle.height, BufferedImage.TYPE_INT_RGB);
+//                        Graphics graphics = bufferedImage.getGraphics();
+//                        graphics.drawImage(image, 0, 0, viewWindow.captureRegion.rectangle.width, viewWindow.captureRegion.rectangle.height, null);
+//                        graphics.dispose();
+//                        viewWindow.captureRegion.imageCaptured = bufferedImage;
+                        viewWindow.captureRegion.imageCaptured = viewWindow.captureRegion.robot.createScreenCapture(viewWindow.captureRegion.rectangle);
 						viewWindow.image_View.setSize(
 								viewWindow.captureRegion.mouseCapture[2] - viewWindow.captureRegion.mouseCapture[0],
 								viewWindow.captureRegion.mouseCapture[3] - viewWindow.captureRegion.mouseCapture[1]);
@@ -155,24 +160,24 @@ public class Application {
 								viewWindow.captureRegion.mouseCapture[2] - viewWindow.captureRegion.mouseCapture[0],
 								viewWindow.captureRegion.mouseCapture[3] - viewWindow.captureRegion.mouseCapture[1]);
 						viewWindow.setLocation(mousePosition[0] + 10, mousePosition[1] + 20);
-						viewWindow.setVisible(true);
-						moving = true;
+                        viewWindow.setVisible(true);
+                        moving = true;
 						hiding = false;
 					} catch (Exception ex) {
 					}
 				}
 				// esc: 캡처 이미지 삭제
-			} else if (viewWindow.captureRegion.imageCaptured != null && mod == 40960 && key == 53) {
+			} else if (viewWindow.captureRegion.imageCaptured != null && (mod == 0 || mod == 40960) && key == 53) {
 				viewWindow.captureRegion.imageCaptured = null;
 				viewWindow.image_View.setSize(0, 0);
 				viewWindow.setSize(0, 0);
 				viewWindow.setLocation(-1, -1);
 				viewWindow.setVisible(false);
 				// LShift, RShift: 캡처 이미지 현재 위치에 고정/해제
-			} else if (viewWindow.captureRegion.imageCaptured != null && mod == 40960 && (key == 56 || key == 60)) {
+			} else if (viewWindow.captureRegion.imageCaptured != null && (mod == 0 || mod == 40960) && (key == 56 || key == 60)) {
 				moving = !moving;
 				// `: 캡처 이미지 숨기기/보이기
-			} else if (viewWindow.captureRegion.imageCaptured != null && mod == 40960 && key == 50) {
+			} else if (viewWindow.captureRegion.imageCaptured != null && (mod == 0 || mod == 40960) && key == 50) {
 				hiding = !hiding;
 				if (hiding == true) {
 					viewWindow.setVisible(false);
@@ -183,7 +188,7 @@ public class Application {
 					viewWindow.setVisible(true);
 				}
 				// Ctrl + F12: 전체화면을 이미지로 저장
-			} else if (mod == 40962 && key == 111) {
+			} else if ((mod == 2 || mod == 40962) && key == 111) {
 				Date date = new Date();
 				String time = simpleDateFormat.format(date);
 				BufferedImage image = viewWindow.captureRegion.robot.createScreenCapture(new Rectangle(0, 0, (int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth()), (int)(Toolkit.getDefaultToolkit().getScreenSize().getHeight())));
@@ -194,7 +199,7 @@ public class Application {
 					ex.printStackTrace();
 				}
 				// Ctrl + F11: 캡처 이미지만  저장
-			} else if (viewWindow.captureRegion.imageCaptured != null && mod == 40962 && key == 103) {
+			} else if (viewWindow.captureRegion.imageCaptured != null && (mod == 2 || mod == 40962) && key == 103) {
 				Date date = new Date();
 				String time = simpleDateFormat.format(date);
 				File filePath = new File(dirDownloads + time + ".png");
