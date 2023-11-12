@@ -170,7 +170,8 @@ public class Application {
 						hideAppMenu();
 						// Chrome
 						try {
-							Runtime.getRuntime().exec(appChrome);
+							Runtime.getRuntime().exec(appChrome01);
+							Runtime.getRuntime().exec(appChrome02);
 						} catch (Exception ex) {
 						}
 					} else {
@@ -377,10 +378,15 @@ public class Application {
 			"-e",
 			"tell application \"Finder\" to activate"
 	};
-	public static String[] appChrome = new String[] {
+	public static String[] appChrome01 = new String[] {
+            "osascript",
+            "-e",
+            "tell application \"Google Chrome\" to activate"
+	};
+    public static String[] appChrome02 = new String[] {
 			"open",
 			"/Applications/Google Chrome.app"
-	};
+    };
 	public static String[] appCode = new String[] {
 			"open",
 			"/Applications/Visual Studio Code.app"
