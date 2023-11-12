@@ -144,14 +144,16 @@ public class Application {
 								viewWindow.captureRegion.mouseCapture[2] - viewWindow.captureRegion.mouseCapture[0],
 								viewWindow.captureRegion.mouseCapture[3] - viewWindow.captureRegion.mouseCapture[1]);
 
-//                        MultiResolutionImage multiResolutionImage = viewWindow.captureRegion.robot.createMultiResolutionScreenCapture(viewWindow.captureRegion.rectangle);
-//                        Image image = multiResolutionImage.getResolutionVariant(1920, 1080);
-//                        BufferedImage bufferedImage = new BufferedImage(viewWindow.captureRegion.rectangle.width, viewWindow.captureRegion.rectangle.height, BufferedImage.TYPE_INT_RGB);
-//                        Graphics graphics = bufferedImage.getGraphics();
-//                        graphics.drawImage(image, 0, 0, viewWindow.captureRegion.rectangle.width, viewWindow.captureRegion.rectangle.height, null);
-//                        graphics.dispose();
-//                        viewWindow.captureRegion.imageCaptured = bufferedImage;
-                        viewWindow.captureRegion.imageCaptured = viewWindow.captureRegion.robot.createScreenCapture(viewWindow.captureRegion.rectangle);
+                        MultiResolutionImage multiResolutionImage = viewWindow.captureRegion.robot.createMultiResolutionScreenCapture(viewWindow.captureRegion.rectangle);
+						Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
+                        Image image = multiResolutionImage.getResolutionVariant(screenDimension.width, screenDimension.height);
+                        BufferedImage bufferedImage = new BufferedImage(viewWindow.captureRegion.rectangle.width, viewWindow.captureRegion.rectangle.height, BufferedImage.TYPE_INT_RGB);
+						Graphics2D graphics2D = bufferedImage.createGraphics();
+						graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        graphics2D.drawImage(image, 0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
+                        graphics2D.dispose();
+                        viewWindow.captureRegion.imageCaptured = bufferedImage;
+//                        viewWindow.captureRegion.imageCaptured = viewWindow.captureRegion.robot.createScreenCapture(viewWindow.captureRegion.rectangle);
 						viewWindow.image_View.setSize(
 								viewWindow.captureRegion.mouseCapture[2] - viewWindow.captureRegion.mouseCapture[0],
 								viewWindow.captureRegion.mouseCapture[3] - viewWindow.captureRegion.mouseCapture[1]);
