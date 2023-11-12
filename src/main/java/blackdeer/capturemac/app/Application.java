@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.MultiResolutionImage;
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -30,9 +31,15 @@ public class Application {
 		}
 		@Override
 		public void nativeMousePressed(NativeMouseEvent nativeEvent) {
+			if (nativeEvent.getButton() == NativeMouseEvent.BUTTON3) {
+				MButton.compareAndSet(false, true);
+			}
 		}
 		@Override
 		public void nativeMouseReleased(NativeMouseEvent nativeEvent) {
+			if (nativeEvent.getButton() == NativeMouseEvent.BUTTON3) {
+				MButton.compareAndSet(true, false);
+			}
 		}
 
 		@Override
@@ -80,6 +87,9 @@ public class Application {
 					}
 				}
 			}
+			if (appMenu.get() == true) {
+				appMenuWindow.setLocation(e.getX() + 10, e.getY() + 20);
+			}
 		}
 
 		@Override
@@ -90,6 +100,9 @@ public class Application {
 	private static class GlobalKeyListner implements NativeKeyListener {
 		@Override
 		public void nativeKeyPressed(NativeKeyEvent e) {
+			if (appMenu.get() == true) {
+				return;
+			}
 			int mod = e.getModifiers();
 			// 10: Windows LCtrl + LAlt 
 			// 40966: Mac LCtrl + LCommand
@@ -129,89 +142,233 @@ public class Application {
 			int key = e.getRawCode();
 			//System.out.println("mod: " + mod + " / key: " + key);
 			//if(captureStart == true && mod != 10) {
-			if(captureStart == true && mod != 6 && mod != 40966) {
-				captureStart = false;
-				viewWindow.captureRegion.mouseCapture[2] = mousePosition[0];
-				viewWindow.captureRegion.mouseCapture[3] = mousePosition[1];
-				viewWindow.captureRegion.setSize(0, 0);
-				viewWindow.captureRegion.setLocation(-1, -1);
-				viewWindow.captureRegion.setVisible(false);
-				if (viewWindow.captureRegion.mouseCapture[2] > viewWindow.captureRegion.mouseCapture[0] && viewWindow.captureRegion.mouseCapture[3] > viewWindow.captureRegion.mouseCapture[1]) {
-					try {
-						viewWindow.captureRegion.rectangle.setBounds(
-								viewWindow.captureRegion.mouseCapture[0],
-								viewWindow.captureRegion.mouseCapture[1],
-								viewWindow.captureRegion.mouseCapture[2] - viewWindow.captureRegion.mouseCapture[0],
-								viewWindow.captureRegion.mouseCapture[3] - viewWindow.captureRegion.mouseCapture[1]);
+			if (appMenu.get() == true) {
+				// esc || `
+				if (key == 53 || key == 50) {
+					hideAppMenu();
+				} else if (key == 18) {	// 1
+					if (AppMenuWindow.selection.get() == 1) {
+						hideAppMenu();
+						// Finder
+						try {
+//						Runtime.getRuntime().exec(String.format("open /System/Library/CoreServices/Finder.app"));
+							Runtime.getRuntime().exec(appFinder);
+						} catch (Exception ex) {
+						}
+					} else {
+						appMenuWindow.moveSelector(1);
+					}
+				} else if (key == 19) {	// 2
+					if (AppMenuWindow.selection.get() == 2) {
+						hideAppMenu();
+						// Mail
+						try {
+							Runtime.getRuntime().exec(String.format("open -a Mail"));
+						} catch (Exception ex) {
+						}
+					} else {
+						appMenuWindow.moveSelector(2);
+					}
+				} else if (key == 20) {	// 3
+					if (AppMenuWindow.selection.get() == 3) {
+						hideAppMenu();
+						// Slack
+						try {
+							Runtime.getRuntime().exec(String.format("open /Applications/Slack.app"));
+						} catch (Exception ex) {
+						}
+					} else {
+						appMenuWindow.moveSelector(3);
+					}
+				} else if (key == 21) {	// 4
+					if (AppMenuWindow.selection.get() == 4) {
+						hideAppMenu();
+						// Chrome
+						try {
+							Runtime.getRuntime().exec(appChrome);
+						} catch (Exception ex) {
+						}
+					} else {
+						appMenuWindow.moveSelector(4);
+					}
+				} else if (key == 23) {	// 5
+					if (AppMenuWindow.selection.get() == 5) {
+						hideAppMenu();
+						// Terminal
+						try {
+							Runtime.getRuntime().exec(String.format("open -a Terminal"));
+						} catch (Exception ex) {
+						}
+					} else {
+						appMenuWindow.moveSelector(5);
+					}
+				} else if (key == 22) {	// 6
+					if (AppMenuWindow.selection.get() == 6) {
+						hideAppMenu();
+						// Code
+						try {
+							Runtime.getRuntime().exec(appCode);
+						} catch (Exception ex) {
+						}
+					} else {
+						appMenuWindow.moveSelector(6);
+					}
+				} else if (key == 26) {	// 7
+					if (AppMenuWindow.selection.get() == 7) {
+						hideAppMenu();
+						// IntelliJ
+						try {
+							Runtime.getRuntime().exec(appIntelliJ);
+						} catch (Exception ex) {
+						}
+					} else {
+						appMenuWindow.moveSelector(7);
+					}
+				} else if (key == 28) {	// 8
+					if (AppMenuWindow.selection.get() == 8) {
+						hideAppMenu();
+						// WebStorm
+						try {
+							Runtime.getRuntime().exec(String.format("open /Applications/WebStorm.app"));
+						} catch (Exception ex) {
+						}
+					} else {
+						appMenuWindow.moveSelector(8);
+					}
+				} else if (key == 25) {	// 9
+					if (AppMenuWindow.selection.get() == 9) {
+						hideAppMenu();
+						// PyCharm
+						try {
+							Runtime.getRuntime().exec(String.format("open /Applications/PyCharm.app"));
+						} catch (Exception ex) {
+						}
+					} else {
+						appMenuWindow.moveSelector(9);
+					}
+				} else if (key == 29) {	// 0
+					if (AppMenuWindow.selection.get() == 10) {
+						hideAppMenu();
+						// GoLand
+						try {
+							Runtime.getRuntime().exec(String.format("open /Applications/GoLand.app"));
+						} catch (Exception ex) {
+						}
+					} else {
+						appMenuWindow.moveSelector(10);
+					}
+				} else if (key == 27) {	// -
+					if (AppMenuWindow.selection.get() == 11) {
+						hideAppMenu();
+						// Docker
+						try {
+							Runtime.getRuntime().exec(appDocker);
+						} catch (Exception ex) {
+						}
+					} else {
+						appMenuWindow.moveSelector(11);
+					}
+				} else if (key == 24) {	// =
+					if (AppMenuWindow.selection.get() == 12) {
+						hideAppMenu();
+						// Sourcetree
+						try {
+							Runtime.getRuntime().exec(String.format("open /Applications/Sourcetree.app"));
+						} catch (Exception ex) {
+						}
+					} else {
+						appMenuWindow.moveSelector(12);
+					}
+				}
+			} else {
+				// `
+				if (key == 50 && MButton.get() == true) {
+					appMenu.set(true);
+					appMenuWindow.setLocation(mousePosition[0] + 10, mousePosition[1] + 20);
+					appMenuWindow.setVisible(true);
+				} else if(captureStart == true && mod != 6 && mod != 40966) {
+					captureStart = false;
+					viewWindow.captureRegion.mouseCapture[2] = mousePosition[0];
+					viewWindow.captureRegion.mouseCapture[3] = mousePosition[1];
+					viewWindow.captureRegion.setSize(0, 0);
+					viewWindow.captureRegion.setLocation(-1, -1);
+					viewWindow.captureRegion.setVisible(false);
+					if (viewWindow.captureRegion.mouseCapture[2] > viewWindow.captureRegion.mouseCapture[0] && viewWindow.captureRegion.mouseCapture[3] > viewWindow.captureRegion.mouseCapture[1]) {
+						try {
+							viewWindow.captureRegion.rectangle.setBounds(
+									viewWindow.captureRegion.mouseCapture[0],
+									viewWindow.captureRegion.mouseCapture[1],
+									viewWindow.captureRegion.mouseCapture[2] - viewWindow.captureRegion.mouseCapture[0],
+									viewWindow.captureRegion.mouseCapture[3] - viewWindow.captureRegion.mouseCapture[1]);
 
-                        MultiResolutionImage multiResolutionImage = viewWindow.captureRegion.robot.createMultiResolutionScreenCapture(viewWindow.captureRegion.rectangle);
-						Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
-                        Image image = multiResolutionImage.getResolutionVariant(screenDimension.width, screenDimension.height);
-                        BufferedImage bufferedImage = new BufferedImage(viewWindow.captureRegion.rectangle.width, viewWindow.captureRegion.rectangle.height, BufferedImage.TYPE_INT_RGB);
-						Graphics2D graphics2D = bufferedImage.createGraphics();
-						graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                        graphics2D.drawImage(image, 0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
-                        graphics2D.dispose();
-                        viewWindow.captureRegion.imageCaptured = bufferedImage;
+							MultiResolutionImage multiResolutionImage = viewWindow.captureRegion.robot.createMultiResolutionScreenCapture(viewWindow.captureRegion.rectangle);
+							Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
+							Image image = multiResolutionImage.getResolutionVariant(screenDimension.width, screenDimension.height);
+							BufferedImage bufferedImage = new BufferedImage(viewWindow.captureRegion.rectangle.width, viewWindow.captureRegion.rectangle.height, BufferedImage.TYPE_INT_RGB);
+							Graphics2D graphics2D = bufferedImage.createGraphics();
+							graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+							graphics2D.drawImage(image, 0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
+							graphics2D.dispose();
+							viewWindow.captureRegion.imageCaptured = bufferedImage;
 //                        viewWindow.captureRegion.imageCaptured = viewWindow.captureRegion.robot.createScreenCapture(viewWindow.captureRegion.rectangle);
-						viewWindow.image_View.setSize(
-								viewWindow.captureRegion.mouseCapture[2] - viewWindow.captureRegion.mouseCapture[0],
-								viewWindow.captureRegion.mouseCapture[3] - viewWindow.captureRegion.mouseCapture[1]);
-						viewWindow.image_View.setIcon(new ImageIcon(new ImageIcon(viewWindow.captureRegion.imageCaptured).getImage()));
-						viewWindow.setSize(
-								viewWindow.captureRegion.mouseCapture[2] - viewWindow.captureRegion.mouseCapture[0],
-								viewWindow.captureRegion.mouseCapture[3] - viewWindow.captureRegion.mouseCapture[1]);
-						viewWindow.setLocation(mousePosition[0] + 10, mousePosition[1] + 20);
-                        viewWindow.setVisible(true);
-                        moving = true;
-						hiding = false;
-					} catch (Exception ex) {
+							viewWindow.image_View.setSize(
+									viewWindow.captureRegion.mouseCapture[2] - viewWindow.captureRegion.mouseCapture[0],
+									viewWindow.captureRegion.mouseCapture[3] - viewWindow.captureRegion.mouseCapture[1]);
+							viewWindow.image_View.setIcon(new ImageIcon(new ImageIcon(viewWindow.captureRegion.imageCaptured).getImage()));
+							viewWindow.setSize(
+									viewWindow.captureRegion.mouseCapture[2] - viewWindow.captureRegion.mouseCapture[0],
+									viewWindow.captureRegion.mouseCapture[3] - viewWindow.captureRegion.mouseCapture[1]);
+							viewWindow.setLocation(mousePosition[0] + 10, mousePosition[1] + 20);
+							viewWindow.setVisible(true);
+							moving = true;
+							hiding = false;
+						} catch (Exception ex) {
+						}
 					}
-				}
-				// esc: 캡처 이미지 삭제
-			} else if (viewWindow.captureRegion.imageCaptured != null && (mod == 0 || mod == 40960) && key == 53) {
-				viewWindow.captureRegion.imageCaptured = null;
-				viewWindow.image_View.setSize(0, 0);
-				viewWindow.setSize(0, 0);
-				viewWindow.setLocation(-1, -1);
-				viewWindow.setVisible(false);
-				// LShift, RShift: 캡처 이미지 현재 위치에 고정/해제
-			} else if (viewWindow.captureRegion.imageCaptured != null && (mod == 0 || mod == 40960) && (key == 56 || key == 60)) {
-				moving = !moving;
-				// `: 캡처 이미지 숨기기/보이기
-			} else if (viewWindow.captureRegion.imageCaptured != null && (mod == 0 || mod == 40960) && key == 50) {
-				hiding = !hiding;
-				if (hiding == true) {
+					// esc: 캡처 이미지 삭제
+				} else if (viewWindow.captureRegion.imageCaptured != null && (mod == 0 || mod == 40960) && key == 53) {
+					viewWindow.captureRegion.imageCaptured = null;
+					viewWindow.image_View.setSize(0, 0);
+					viewWindow.setSize(0, 0);
+					viewWindow.setLocation(-1, -1);
 					viewWindow.setVisible(false);
-				} else {
-					if (moving == true) {
-						viewWindow.setLocation(mousePosition[0] + 10, mousePosition[1] + 20);
+					// LShift, RShift: 캡처 이미지 현재 위치에 고정/해제
+				} else if (viewWindow.captureRegion.imageCaptured != null && (mod == 0 || mod == 40960) && (key == 56 || key == 60)) {
+					moving = !moving;
+					// `: 캡처 이미지 숨기기/보이기
+				} else if (viewWindow.captureRegion.imageCaptured != null && (mod == 0 || mod == 40960) && key == 50) {
+					hiding = !hiding;
+					if (hiding == true) {
+						viewWindow.setVisible(false);
+					} else {
+						if (moving == true) {
+							viewWindow.setLocation(mousePosition[0] + 10, mousePosition[1] + 20);
+						}
+						viewWindow.setVisible(true);
 					}
-					viewWindow.setVisible(true);
-				}
-				// Ctrl + F12: 전체화면을 이미지로 저장
-			} else if ((mod == 2 || mod == 40962) && key == 111) {
-				Date date = new Date();
-				String time = simpleDateFormat.format(date);
-				BufferedImage image = viewWindow.captureRegion.robot.createScreenCapture(new Rectangle(0, 0, (int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth()), (int)(Toolkit.getDefaultToolkit().getScreenSize().getHeight())));
-				File filePath = new File(dirDownloads + time + ".png");
-				try {
-					ImageIO.write(image, "png", filePath);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-				// Ctrl + F11: 캡처 이미지만  저장
-			} else if (viewWindow.captureRegion.imageCaptured != null && (mod == 2 || mod == 40962) && key == 103) {
-				Date date = new Date();
-				String time = simpleDateFormat.format(date);
-				File filePath = new File(dirDownloads + time + ".png");
-				try {
-					ImageIO.write(viewWindow.captureRegion.imageCaptured, "png", filePath);
-				} catch (Exception ex) {
-					ex.printStackTrace();
+					// Ctrl + F12: 전체화면을 이미지로 저장
+				} else if ((mod == 2 || mod == 40962) && key == 111) {
+					Date date = new Date();
+					String time = simpleDateFormat.format(date);
+					BufferedImage image = viewWindow.captureRegion.robot.createScreenCapture(new Rectangle(0, 0, (int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth()), (int)(Toolkit.getDefaultToolkit().getScreenSize().getHeight())));
+					File filePath = new File(dirDownloads + time + ".png");
+					try {
+						ImageIO.write(image, "png", filePath);
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+					// Ctrl + F11: 캡처 이미지만  저장
+				} else if (viewWindow.captureRegion.imageCaptured != null && (mod == 2 || mod == 40962) && key == 103) {
+					Date date = new Date();
+					String time = simpleDateFormat.format(date);
+					File filePath = new File(dirDownloads + time + ".png");
+					try {
+						ImageIO.write(viewWindow.captureRegion.imageCaptured, "png", filePath);
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
 				}
 			}
-
 		}
 
 		@Override
@@ -224,9 +381,40 @@ public class Application {
 	private static boolean moving = false;
 	private static boolean hiding = false;
 	private static ViewWindow viewWindow;
+	private static AppMenuWindow appMenuWindow;
 	private static String dirDownloads;
 	private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HH;mm;ss");
 	public static AtomicBoolean timing = new AtomicBoolean(false);
+	public static AtomicBoolean MButton = new AtomicBoolean(false);
+	public static AtomicBoolean appMenu = new AtomicBoolean(false);
+	public static String[] appFinder = new String[] {
+			"osascript",
+			"-e",
+			"tell application \"Finder\" to activate"
+	};
+	public static String[] appChrome = new String[] {
+			"open",
+			"/Applications/Google Chrome.app"
+	};
+	public static String[] appCode = new String[] {
+			"open",
+			"/Applications/Visual Studio Code.app"
+	};
+	public static String[] appIntelliJ = new String[] {
+			"open",
+			"/Applications/IntelliJ IDEA.app"
+	};
+	public static String[] appDocker = new String[] {
+			"open",
+			"-a",
+			"Docker Desktop"
+	};
+
+	private static void hideAppMenu() {
+		appMenuWindow.moveSelector(0);
+		appMenuWindow.setVisible(false);
+		appMenu.set(false);
+	}
 
 	public static void main(String[] args) {
 		System.setProperty("file.encoding", "UTF-8");
@@ -245,8 +433,9 @@ public class Application {
 		} catch(Exception e) {
 		}
 		viewWindow = new ViewWindow();
-		//GlobalScreen.addNativeMouseMotionListener(new GlobalMouseMotionListener());
-		//GlobalScreen.addNativeMouseMotionListener(new GlobalMouseInputListner());
+		appMenuWindow = new AppMenuWindow();
+		GlobalScreen.addNativeMouseMotionListener(new GlobalMouseMotionListener());
+		GlobalScreen.addNativeMouseMotionListener(new GlobalMouseInputListner());
 		GlobalScreen.addNativeKeyListener(new GlobalKeyListner());
 
 		new Thread() {
@@ -280,6 +469,19 @@ public class Application {
 			};
 		}.start();
 
-		System.out.println("============================================================\nCaptureMac - https://github.com/BlackdeerY/CaptureMac\n------------------------------------------------------------\nLCtrl + LCommand: Decide Capture Region and Capture Image.\nLShift or RShift: Fix/Move Captured Image.\n`: Hide/Show Captured Image.\nesc: Dispose Captured Image.\nLCtrl + F11: Save Captured Image to ~/Downloads.\nLCtrl + F12: Save Image of Fullscreen to ~/Downloads.\n============================================================");
+		System.out.println(String.format(
+				"==============================================================%s  CaptureMac - https://github.com/BlackdeerY/CaptureMac%s--------------------------------------------------------------%s- LCtrl + LCommand: Decide Capture Region and Capture Image.%s- LShift or RShift: Fix/Move Captured Image.%s- `: Hide/Show Captured Image.%s- esc: Dispose Captured Image.%s- LCtrl + F11: Save Captured Image to ~/Downloads.%s- LCtrl + F12: Save Image of Fullscreen to ~/Downloads.%s- MButton + `: Open App Menu%s  - `/esc: Close App Menu%s  - 1,2,3,4,5,6,7,8,9,0,-,=: Launch App%s==============================================================",
+				System.lineSeparator(),
+				System.lineSeparator(),
+				System.lineSeparator(),
+				System.lineSeparator(),
+				System.lineSeparator(),
+				System.lineSeparator(),
+				System.lineSeparator(),
+				System.lineSeparator(),
+				System.lineSeparator(),
+				System.lineSeparator(),
+				System.lineSeparator(),
+				System.lineSeparator()));
 	}
 }
