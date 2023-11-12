@@ -44,22 +44,6 @@ public class Application {
 
 		@Override
 		public void nativeMouseMoved(NativeMouseEvent e) {
-			if (timing.compareAndSet(false, true)) {
-				mousePosition[0] = e.getX();
-				mousePosition[1] = e.getY();
-				if (viewWindow.captureRegion.imageCaptured != null && moving == true && hiding == false) {
-					viewWindow.setVisible(true);
-					viewWindow.setLocation(e.getX() + 10, e.getY() + 20);
-				} else if (captureStart == true) {
-					viewWindow.captureRegion.setSize((int)(((float)(e.getX() - viewWindow.captureRegion.mouseCapture[0])) / viewWindow.captureRegion.forScale),
-							(int)(((float)(e.getY() - viewWindow.captureRegion.mouseCapture[1])) / viewWindow.captureRegion.forScale));
-				}
-				while (true) {
-					if (timing.compareAndSet(true, false)) {
-						break;
-					}
-				}
-			}
 		}
 
 		@Override
@@ -152,6 +136,7 @@ public class Application {
 						// Finder
 						try {
 //						Runtime.getRuntime().exec(String.format("open /System/Library/CoreServices/Finder.app"));
+							Runtime.getRuntime().exec(String.format("open -a Finder"));
 							Runtime.getRuntime().exec(appFinder);
 						} catch (Exception ex) {
 						}
@@ -435,7 +420,7 @@ public class Application {
 		viewWindow = new ViewWindow();
 		appMenuWindow = new AppMenuWindow();
 		GlobalScreen.addNativeMouseMotionListener(new GlobalMouseMotionListener());
-		GlobalScreen.addNativeMouseMotionListener(new GlobalMouseInputListner());
+		GlobalScreen.addNativeMouseListener(new GlobalMouseInputListner());
 		GlobalScreen.addNativeKeyListener(new GlobalKeyListner());
 
 		new Thread() {
