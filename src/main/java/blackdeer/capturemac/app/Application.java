@@ -2,9 +2,7 @@ package blackdeer.capturemac.app;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.MultiResolutionImage;
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -136,8 +134,8 @@ public class Application {
 						// Finder
 						try {
 //						Runtime.getRuntime().exec(String.format("open /System/Library/CoreServices/Finder.app"));
-							Runtime.getRuntime().exec(String.format("open -a Finder"));
-							Runtime.getRuntime().exec(appFinder);
+                            Runtime.getRuntime().exec(appFinder01);
+                            Runtime.getRuntime().exec(String.format("open -a Finder"));
 						} catch (Exception ex) {
 						}
 					} else {
@@ -148,8 +146,9 @@ public class Application {
 						hideAppMenu();
 						// Mail
 						try {
-							Runtime.getRuntime().exec(String.format("open -a Mail"));
-						} catch (Exception ex) {
+                            Runtime.getRuntime().exec(appMail01);
+                            Runtime.getRuntime().exec(String.format("open -a Mail"));
+                        } catch (Exception ex) {
 						}
 					} else {
 						appMenuWindow.moveSelector(2);
@@ -193,7 +192,8 @@ public class Application {
 						hideAppMenu();
 						// Code
 						try {
-							Runtime.getRuntime().exec(appCode);
+							Runtime.getRuntime().exec(appCode01);
+							Runtime.getRuntime().exec(appCode02);
 						} catch (Exception ex) {
 						}
 					} else {
@@ -259,6 +259,7 @@ public class Application {
 						hideAppMenu();
 						// Sourcetree
 						try {
+							Runtime.getRuntime().exec(appSourcetree01);
 							Runtime.getRuntime().exec(String.format("open /Applications/Sourcetree.app"));
 						} catch (Exception ex) {
 						}
@@ -287,16 +288,16 @@ public class Application {
 									viewWindow.captureRegion.mouseCapture[2] - viewWindow.captureRegion.mouseCapture[0],
 									viewWindow.captureRegion.mouseCapture[3] - viewWindow.captureRegion.mouseCapture[1]);
 
-							MultiResolutionImage multiResolutionImage = viewWindow.captureRegion.robot.createMultiResolutionScreenCapture(viewWindow.captureRegion.rectangle);
-							Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
-							Image image = multiResolutionImage.getResolutionVariant(screenDimension.width, screenDimension.height);
-							BufferedImage bufferedImage = new BufferedImage(viewWindow.captureRegion.rectangle.width, viewWindow.captureRegion.rectangle.height, BufferedImage.TYPE_INT_RGB);
-							Graphics2D graphics2D = bufferedImage.createGraphics();
-							graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-							graphics2D.drawImage(image, 0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
-							graphics2D.dispose();
-							viewWindow.captureRegion.imageCaptured = bufferedImage;
-//                        viewWindow.captureRegion.imageCaptured = viewWindow.captureRegion.robot.createScreenCapture(viewWindow.captureRegion.rectangle);
+//							MultiResolutionImage multiResolutionImage = viewWindow.captureRegion.robot.createMultiResolutionScreenCapture(viewWindow.captureRegion.rectangle);
+//							Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
+//							Image image = multiResolutionImage.getResolutionVariant(screenDimension.width, screenDimension.height);
+//							BufferedImage bufferedImage = new BufferedImage(viewWindow.captureRegion.rectangle.width, viewWindow.captureRegion.rectangle.height, BufferedImage.TYPE_INT_RGB);
+//							Graphics2D graphics2D = bufferedImage.createGraphics();
+//							graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+//							graphics2D.drawImage(image, 0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
+//							graphics2D.dispose();
+//							viewWindow.captureRegion.imageCaptured = bufferedImage;
+                        viewWindow.captureRegion.imageCaptured = viewWindow.captureRegion.robot.createScreenCapture(viewWindow.captureRegion.rectangle);
 							viewWindow.image_View.setSize(
 									viewWindow.captureRegion.mouseCapture[2] - viewWindow.captureRegion.mouseCapture[0],
 									viewWindow.captureRegion.mouseCapture[3] - viewWindow.captureRegion.mouseCapture[1]);
@@ -373,11 +374,16 @@ public class Application {
 	public static AtomicBoolean timing = new AtomicBoolean(false);
 	public static AtomicBoolean MButton = new AtomicBoolean(false);
 	public static AtomicBoolean appMenu = new AtomicBoolean(false);
-	public static String[] appFinder = new String[] {
+	public static String[] appFinder01 = new String[] {
 			"osascript",
 			"-e",
 			"tell application \"Finder\" to activate"
 	};
+    public static String[] appMail01 = new String[] {
+            "osascript",
+            "-e",
+            "tell application \"Mail\" to activate"
+    };
 	public static String[] appChrome01 = new String[] {
             "osascript",
             "-e",
@@ -387,7 +393,12 @@ public class Application {
 			"open",
 			"/Applications/Google Chrome.app"
     };
-	public static String[] appCode = new String[] {
+    public static String[] appCode01 = new String[] {
+            "osascript",
+            "-e",
+            "tell application \"Visual Studio Code\" to activate"
+    };
+	public static String[] appCode02 = new String[] {
 			"open",
 			"/Applications/Visual Studio Code.app"
 	};
@@ -400,6 +411,11 @@ public class Application {
 			"-a",
 			"Docker Desktop"
 	};
+    public static String[] appSourcetree01 = new String[] {
+            "osascript",
+            "-e",
+            "tell application \"Sourcetree\" to activate"
+    };
 
 	private static void hideAppMenu() {
 		appMenuWindow.moveSelector(0);
