@@ -17,35 +17,28 @@ import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
-import com.github.kwhat.jnativehook.mouse.NativeMouseEvent;
-import com.github.kwhat.jnativehook.mouse.NativeMouseInputListener;
-import com.github.kwhat.jnativehook.mouse.NativeMouseMotionListener;
+import com.github.kwhat.jnativehook.mouse.*;
 
 public class Application {
 	@SuppressWarnings("unused")
-	private static class GlobalMouseInputListner implements NativeMouseInputListener {
+	private static class GlobalMouseListner implements NativeMouseListener {
 		@Override
 		public void nativeMouseClicked(NativeMouseEvent nativeEvent) {
 		}
 		@Override
 		public void nativeMousePressed(NativeMouseEvent nativeEvent) {
 			if (nativeEvent.getButton() == NativeMouseEvent.BUTTON3) {
-				MButton.compareAndSet(false, true);
+				if (captureStart == false && appMenu.get() == false && keyCommand.get() == true) {
+					appMenu.set(true);
+					appMenuWindow.setLocation(nativeEvent.getX() - (appMenuWindow.getWidth() / 2), nativeEvent.getY() - (appMenuWindow.getHeight() / 2));
+					AppMenuWindow.selected.set(0);
+//					appMenuWindow.moveSelector(nativeEvent.getX(), nativeEvent.getY());
+					appMenuWindow.setVisible(true);
+				}
 			}
 		}
 		@Override
 		public void nativeMouseReleased(NativeMouseEvent nativeEvent) {
-			if (nativeEvent.getButton() == NativeMouseEvent.BUTTON3) {
-				MButton.compareAndSet(true, false);
-			}
-		}
-
-		@Override
-		public void nativeMouseMoved(NativeMouseEvent e) {
-		}
-
-		@Override
-		public void nativeMouseDragged(NativeMouseEvent nativeEvent) {
 		}
 	}
 
@@ -53,24 +46,25 @@ public class Application {
 	private static class GlobalMouseMotionListener implements NativeMouseMotionListener {
 		@Override
 		public void nativeMouseMoved(NativeMouseEvent e) {
-			if (timing.compareAndSet(false, true)) {
-				mousePosition[0] = e.getX();
-				mousePosition[1] = e.getY();
-				if (viewWindow.captureRegion.imageCaptured != null && moving == true && hiding == false) {
-					viewWindow.setVisible(true);
-					viewWindow.setLocation(e.getX() + 10, e.getY() + 20);
-				} else if (captureStart == true) {
-					viewWindow.captureRegion.setSize((int)(((float)(e.getX() - viewWindow.captureRegion.mouseCapture[0])) / viewWindow.captureRegion.forScale),
-							(int)(((float)(e.getY() - viewWindow.captureRegion.mouseCapture[1])) / viewWindow.captureRegion.forScale));
-				}
-				while (true) {
-					if (timing.compareAndSet(true, false)) {
-						break;
+			if (appMenu.get() == true) {
+				appMenuWindow.moveSelector(e.getX(), e.getY());
+			} else {
+				if (timing.compareAndSet(false, true)) {
+					mousePosition[0] = e.getX();
+					mousePosition[1] = e.getY();
+					if (viewWindow.captureRegion.imageCaptured != null && moving == true && hiding == false) {
+						viewWindow.setVisible(true);
+						viewWindow.setLocation(e.getX() + 10, e.getY() + 20);
+					} else if (captureStart == true) {
+						viewWindow.captureRegion.setSize((int)(((float)(e.getX() - viewWindow.captureRegion.mouseCapture[0])) / viewWindow.captureRegion.forScale),
+								(int)(((float)(e.getY() - viewWindow.captureRegion.mouseCapture[1])) / viewWindow.captureRegion.forScale));
+					}
+					while (true) {
+						if (timing.compareAndSet(true, false)) {
+							break;
+						}
 					}
 				}
-			}
-			if (appMenu.get() == true) {
-				appMenuWindow.setLocation(e.getX() + 10, e.getY() + 20);
 			}
 		}
 
@@ -82,14 +76,16 @@ public class Application {
 	private static class GlobalKeyListner implements NativeKeyListener {
 		@Override
 		public void nativeKeyPressed(NativeKeyEvent e) {
-			if (appMenu.get() == true) {
-				return;
-			}
 			int mod = e.getModifiers();
-			// 10: Windows LCtrl + LAlt 
+			int key = e.getRawCode();
+			// command
+			if (key == 55) {
+				keyCommand.set(true);
+			}
+			// 10: Windows LCtrl + LAlt
 			// 40966: Mac LCtrl + LCommand
-            // 1310729: Mac VNC LCtrl + LCommand
-            if(captureStart == false && (mod == 6 || mod == 40966)) {
+			// 1310729: Mac VNC LCtrl + LCommand
+			if(captureStart == false && (mod == 6 || mod == 40966)) {
 				if(viewWindow.captureRegion.imageCaptured == null && captureStart == false) {
 					viewWindow.captureRegion.mouseCapture[0] = mousePosition[0];
 					viewWindow.captureRegion.mouseCapture[1] = mousePosition[1];
@@ -122,171 +118,29 @@ public class Application {
 		public void nativeKeyReleased(NativeKeyEvent e) {
 			int mod = e.getModifiers();
 			int key = e.getRawCode();
-			//System.out.println("mod: " + mod + " / key: " + key);
-			//if(captureStart == true && mod != 10) {
-			if (appMenu.get() == true) {
-				// esc || `
-				if (key == 53 || key == 50) {
-					hideAppMenu();
-				} else if (key == 18) {	// 1
-					if (AppMenuWindow.selection.get() == 1) {
-						hideAppMenu();
-						// Finder
-						try {
-//						Runtime.getRuntime().exec(String.format("open /System/Library/CoreServices/Finder.app"));
-                            Runtime.getRuntime().exec(appFinder01);
-                            Runtime.getRuntime().exec(String.format("open -a Finder"));
-						} catch (Exception ex) {
-						}
-					} else {
-						appMenuWindow.moveSelector(1);
-					}
-				} else if (key == 19) {	// 2
-					if (AppMenuWindow.selection.get() == 2) {
-						hideAppMenu();
-						// Mail
-						try {
-                            Runtime.getRuntime().exec(appMail01);
-                            Runtime.getRuntime().exec(String.format("open -a Mail"));
-                        } catch (Exception ex) {
-						}
-					} else {
-						appMenuWindow.moveSelector(2);
-					}
-				} else if (key == 20) {	// 3
-					if (AppMenuWindow.selection.get() == 3) {
-						hideAppMenu();
-						// Slack
-						try {
-							Runtime.getRuntime().exec(String.format("open /Applications/Slack.app"));
-						} catch (Exception ex) {
-						}
-					} else {
-						appMenuWindow.moveSelector(3);
-					}
-				} else if (key == 21) {	// 4
-					if (AppMenuWindow.selection.get() == 4) {
-						hideAppMenu();
-						// Chrome
-						try {
-							Runtime.getRuntime().exec(appChrome01);
-							Runtime.getRuntime().exec(appChrome02);
-						} catch (Exception ex) {
-						}
-					} else {
-						appMenuWindow.moveSelector(4);
-					}
-				} else if (key == 23) {	// 5
-					if (AppMenuWindow.selection.get() == 5) {
-						hideAppMenu();
-						// Terminal
-						try {
-							Runtime.getRuntime().exec(String.format("open -a Terminal"));
-						} catch (Exception ex) {
-						}
-					} else {
-						appMenuWindow.moveSelector(5);
-					}
-				} else if (key == 22) {	// 6
-					if (AppMenuWindow.selection.get() == 6) {
-						hideAppMenu();
-						// Code
-						try {
-							Runtime.getRuntime().exec(appCode01);
-							Runtime.getRuntime().exec(appCode02);
-						} catch (Exception ex) {
-						}
-					} else {
-						appMenuWindow.moveSelector(6);
-					}
-				} else if (key == 26) {	// 7
-					if (AppMenuWindow.selection.get() == 7) {
-						hideAppMenu();
-						// IntelliJ
-						try {
-							Runtime.getRuntime().exec(appIntelliJ);
-						} catch (Exception ex) {
-						}
-					} else {
-						appMenuWindow.moveSelector(7);
-					}
-				} else if (key == 28) {	// 8
-					if (AppMenuWindow.selection.get() == 8) {
-						hideAppMenu();
-						// WebStorm
-						try {
-							Runtime.getRuntime().exec(String.format("open /Applications/WebStorm.app"));
-						} catch (Exception ex) {
-						}
-					} else {
-						appMenuWindow.moveSelector(8);
-					}
-				} else if (key == 25) {	// 9
-					if (AppMenuWindow.selection.get() == 9) {
-						hideAppMenu();
-						// PyCharm
-						try {
-							Runtime.getRuntime().exec(String.format("open /Applications/PyCharm.app"));
-						} catch (Exception ex) {
-						}
-					} else {
-						appMenuWindow.moveSelector(9);
-					}
-				} else if (key == 29) {	// 0
-					if (AppMenuWindow.selection.get() == 10) {
-						hideAppMenu();
-						// GoLand
-						try {
-							Runtime.getRuntime().exec(String.format("open /Applications/GoLand.app"));
-						} catch (Exception ex) {
-						}
-					} else {
-						appMenuWindow.moveSelector(10);
-					}
-				} else if (key == 27) {	// -
-					if (AppMenuWindow.selection.get() == 11) {
-						hideAppMenu();
-						// Docker
-						try {
-							Runtime.getRuntime().exec(appDocker);
-						} catch (Exception ex) {
-						}
-					} else {
-						appMenuWindow.moveSelector(11);
-					}
-				} else if (key == 24) {	// =
-					if (AppMenuWindow.selection.get() == 12) {
-						hideAppMenu();
-						// Sourcetree
-						try {
-							Runtime.getRuntime().exec(appSourcetree01);
-							Runtime.getRuntime().exec(String.format("open /Applications/Sourcetree.app"));
-						} catch (Exception ex) {
-						}
-					} else {
-						appMenuWindow.moveSelector(12);
-					}
+			// command
+			if (key == 55) {
+				keyCommand.set(false);
+				if (appMenu.get() == true) {
+					appMenuWindow.launchApp();
+					appMenu.set(false);
+					appMenuWindow.setVisible(false);
 				}
-			} else {
-				// `
-				if (key == 50 && MButton.get() == true) {
-					appMenu.set(true);
-					appMenuWindow.setLocation(mousePosition[0] + 10, mousePosition[1] + 20);
-					appMenuWindow.setVisible(true);
-				} else if(captureStart == true && mod != 6 && mod != 40966) {
-					captureStart = false;
-					viewWindow.captureRegion.mouseCapture[2] = mousePosition[0];
-					viewWindow.captureRegion.mouseCapture[3] = mousePosition[1];
-					viewWindow.captureRegion.setSize(0, 0);
-					viewWindow.captureRegion.setLocation(-1, -1);
-					viewWindow.captureRegion.setVisible(false);
-					if (viewWindow.captureRegion.mouseCapture[2] > viewWindow.captureRegion.mouseCapture[0] && viewWindow.captureRegion.mouseCapture[3] > viewWindow.captureRegion.mouseCapture[1]) {
-						try {
-							viewWindow.captureRegion.rectangle.setBounds(
-									viewWindow.captureRegion.mouseCapture[0],
-									viewWindow.captureRegion.mouseCapture[1],
-									viewWindow.captureRegion.mouseCapture[2] - viewWindow.captureRegion.mouseCapture[0],
-									viewWindow.captureRegion.mouseCapture[3] - viewWindow.captureRegion.mouseCapture[1]);
+			}
+			if(captureStart == true && mod != 6 && mod != 40966) {
+				captureStart = false;
+				viewWindow.captureRegion.mouseCapture[2] = mousePosition[0];
+				viewWindow.captureRegion.mouseCapture[3] = mousePosition[1];
+				viewWindow.captureRegion.setSize(0, 0);
+				viewWindow.captureRegion.setLocation(-1, -1);
+				viewWindow.captureRegion.setVisible(false);
+				if (viewWindow.captureRegion.mouseCapture[2] > viewWindow.captureRegion.mouseCapture[0] && viewWindow.captureRegion.mouseCapture[3] > viewWindow.captureRegion.mouseCapture[1]) {
+					try {
+						viewWindow.captureRegion.rectangle.setBounds(
+								viewWindow.captureRegion.mouseCapture[0],
+								viewWindow.captureRegion.mouseCapture[1],
+								viewWindow.captureRegion.mouseCapture[2] - viewWindow.captureRegion.mouseCapture[0],
+								viewWindow.captureRegion.mouseCapture[3] - viewWindow.captureRegion.mouseCapture[1]);
 
 //							MultiResolutionImage multiResolutionImage = viewWindow.captureRegion.robot.createMultiResolutionScreenCapture(viewWindow.captureRegion.rectangle);
 //							Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
@@ -297,63 +151,62 @@ public class Application {
 //							graphics2D.drawImage(image, 0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
 //							graphics2D.dispose();
 //							viewWindow.captureRegion.imageCaptured = bufferedImage;
-                        viewWindow.captureRegion.imageCaptured = viewWindow.captureRegion.robot.createScreenCapture(viewWindow.captureRegion.rectangle);
-							viewWindow.image_View.setSize(
-									viewWindow.captureRegion.mouseCapture[2] - viewWindow.captureRegion.mouseCapture[0],
-									viewWindow.captureRegion.mouseCapture[3] - viewWindow.captureRegion.mouseCapture[1]);
-							viewWindow.image_View.setIcon(new ImageIcon(new ImageIcon(viewWindow.captureRegion.imageCaptured).getImage()));
-							viewWindow.setSize(
-									viewWindow.captureRegion.mouseCapture[2] - viewWindow.captureRegion.mouseCapture[0],
-									viewWindow.captureRegion.mouseCapture[3] - viewWindow.captureRegion.mouseCapture[1]);
-							viewWindow.setLocation(mousePosition[0] + 10, mousePosition[1] + 20);
-							viewWindow.setVisible(true);
-							moving = true;
-							hiding = false;
-						} catch (Exception ex) {
-						}
-					}
-					// esc: 캡처 이미지 삭제
-				} else if (viewWindow.captureRegion.imageCaptured != null && (mod == 0 || mod == 40960) && key == 53) {
-					viewWindow.captureRegion.imageCaptured = null;
-					viewWindow.image_View.setSize(0, 0);
-					viewWindow.setSize(0, 0);
-					viewWindow.setLocation(-1, -1);
-					viewWindow.setVisible(false);
-					// LShift, RShift: 캡처 이미지 현재 위치에 고정/해제
-				} else if (viewWindow.captureRegion.imageCaptured != null && (mod == 0 || mod == 40960) && (key == 56 || key == 60)) {
-					moving = !moving;
-					// `: 캡처 이미지 숨기기/보이기
-				} else if (viewWindow.captureRegion.imageCaptured != null && (mod == 0 || mod == 40960) && key == 50) {
-					hiding = !hiding;
-					if (hiding == true) {
-						viewWindow.setVisible(false);
-					} else {
-						if (moving == true) {
-							viewWindow.setLocation(mousePosition[0] + 10, mousePosition[1] + 20);
-						}
+						viewWindow.captureRegion.imageCaptured = viewWindow.captureRegion.robot.createScreenCapture(viewWindow.captureRegion.rectangle);
+						viewWindow.image_View.setSize(
+								viewWindow.captureRegion.mouseCapture[2] - viewWindow.captureRegion.mouseCapture[0],
+								viewWindow.captureRegion.mouseCapture[3] - viewWindow.captureRegion.mouseCapture[1]);
+						viewWindow.image_View.setIcon(new ImageIcon(new ImageIcon(viewWindow.captureRegion.imageCaptured).getImage()));
+						viewWindow.setSize(
+								viewWindow.captureRegion.mouseCapture[2] - viewWindow.captureRegion.mouseCapture[0],
+								viewWindow.captureRegion.mouseCapture[3] - viewWindow.captureRegion.mouseCapture[1]);
+						viewWindow.setLocation(mousePosition[0] + 10, mousePosition[1] + 20);
 						viewWindow.setVisible(true);
-					}
-					// Ctrl + F12: 전체화면을 이미지로 저장
-				} else if ((mod == 2 || mod == 40962) && key == 111) {
-					Date date = new Date();
-					String time = simpleDateFormat.format(date);
-					BufferedImage image = viewWindow.captureRegion.robot.createScreenCapture(new Rectangle(0, 0, (int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth()), (int)(Toolkit.getDefaultToolkit().getScreenSize().getHeight())));
-					File filePath = new File(dirDownloads + time + ".png");
-					try {
-						ImageIO.write(image, "png", filePath);
+						moving = true;
+						hiding = false;
 					} catch (Exception ex) {
-						ex.printStackTrace();
 					}
-					// Ctrl + F11: 캡처 이미지만  저장
-				} else if (viewWindow.captureRegion.imageCaptured != null && (mod == 2 || mod == 40962) && key == 103) {
-					Date date = new Date();
-					String time = simpleDateFormat.format(date);
-					File filePath = new File(dirDownloads + time + ".png");
-					try {
-						ImageIO.write(viewWindow.captureRegion.imageCaptured, "png", filePath);
-					} catch (Exception ex) {
-						ex.printStackTrace();
+				}
+				// esc: 캡처 이미지 삭제
+			} else if (viewWindow.captureRegion.imageCaptured != null && (mod == 0 || mod == 40960) && key == 53) {
+				viewWindow.captureRegion.imageCaptured = null;
+				viewWindow.image_View.setSize(0, 0);
+				viewWindow.setSize(0, 0);
+				viewWindow.setLocation(-1, -1);
+				viewWindow.setVisible(false);
+				// LShift, RShift: 캡처 이미지 현재 위치에 고정/해제
+			} else if (viewWindow.captureRegion.imageCaptured != null && (mod == 0 || mod == 40960) && (key == 56 || key == 60)) {
+				moving = !moving;
+				// `: 캡처 이미지 숨기기/보이기
+			} else if (viewWindow.captureRegion.imageCaptured != null && (mod == 0 || mod == 40960) && key == 50) {
+				hiding = !hiding;
+				if (hiding == true) {
+					viewWindow.setVisible(false);
+				} else {
+					if (moving == true) {
+						viewWindow.setLocation(mousePosition[0] + 10, mousePosition[1] + 20);
 					}
+					viewWindow.setVisible(true);
+				}
+				// Ctrl + F12: 전체화면을 이미지로 저장
+			} else if ((mod == 2 || mod == 40962) && key == 111) {
+				Date date = new Date();
+				String time = simpleDateFormat.format(date);
+				BufferedImage image = viewWindow.captureRegion.robot.createScreenCapture(new Rectangle(0, 0, (int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth()), (int)(Toolkit.getDefaultToolkit().getScreenSize().getHeight())));
+				File filePath = new File(dirDownloads + time + ".png");
+				try {
+					ImageIO.write(image, "png", filePath);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				// Ctrl + F11: 캡처 이미지만  저장
+			} else if (viewWindow.captureRegion.imageCaptured != null && (mod == 2 || mod == 40962) && key == 103) {
+				Date date = new Date();
+				String time = simpleDateFormat.format(date);
+				File filePath = new File(dirDownloads + time + ".png");
+				try {
+					ImageIO.write(viewWindow.captureRegion.imageCaptured, "png", filePath);
+				} catch (Exception ex) {
+					ex.printStackTrace();
 				}
 			}
 		}
@@ -373,6 +226,7 @@ public class Application {
 	private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HH;mm;ss");
 	public static AtomicBoolean timing = new AtomicBoolean(false);
 	public static AtomicBoolean MButton = new AtomicBoolean(false);
+	public static AtomicBoolean keyCommand = new AtomicBoolean(false);
 	public static AtomicBoolean appMenu = new AtomicBoolean(false);
 	public static String[] appFinder01 = new String[] {
 			"osascript",
@@ -442,7 +296,7 @@ public class Application {
 		viewWindow = new ViewWindow();
 		appMenuWindow = new AppMenuWindow();
 		GlobalScreen.addNativeMouseMotionListener(new GlobalMouseMotionListener());
-		GlobalScreen.addNativeMouseListener(new GlobalMouseInputListner());
+		GlobalScreen.addNativeMouseListener(new GlobalMouseListner());
 		GlobalScreen.addNativeKeyListener(new GlobalKeyListner());
 
 		new Thread() {
@@ -477,7 +331,8 @@ public class Application {
 		}.start();
 
 		System.out.println(String.format(
-				"==============================================================%s  CaptureMac - https://github.com/BlackdeerY/CaptureMac%s--------------------------------------------------------------%s- LCtrl + LCommand: Decide Capture Region and Capture Image.%s- LShift or RShift: Fix/Move Captured Image.%s- `: Hide/Show Captured Image.%s- esc: Dispose Captured Image.%s- LCtrl + F11: Save Captured Image to ~/Downloads.%s- LCtrl + F12: Save Image of Fullscreen to ~/Downloads.%s- MButton + `: Open App Menu%s  - `/esc: Close App Menu%s  - 1,2,3,4,5,6,7,8,9,0,-,=: Launch App%s==============================================================",
+				"==============================================================%s  CaptureMac - https://github.com/BlackdeerY/CaptureMac%s--------------------------------------------------------------%s* Ctrl(hold) + Command(hold): Decide Capture Area.%s  - Ctrl Up or Command Up: Capture.%s* Shift: Fix/Move Captured Image.%s* `: Hide/Show Captured Image.%s* esc: Dispose Captured Image.%s* Ctrl + F11: Save Captured Image to ~/Downloads.%s* Ctrl + F12: Save Image of Fullscreen to ~/Downloads.%s* Command(hold) + MButton: Open App Menu.%s  - Command Up: Launch Selected App.%s==============================================================",
+				System.lineSeparator(),
 				System.lineSeparator(),
 				System.lineSeparator(),
 				System.lineSeparator(),
