@@ -269,18 +269,4 @@ public class AppMenuWindow extends JDialog {
         } catch (Exception e) {
         }
     }
-
-    public void moveSelector(int selection) {
-        AppMenuWindow.selection.set(selection);
-        if (selection <= 0) {
-            selector.setVisible(false);
-        } else {
-            selector.setVisible(true);
-            selector.setLocation(10 + (20 + 64) * ((selection - 1) % 4), 10 + (20 + 64) * ((selection - 1) / 4));
-        }
-    }
-
-
-
-
 }

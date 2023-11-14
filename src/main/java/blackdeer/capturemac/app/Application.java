@@ -228,54 +228,6 @@ public class Application {
 	public static AtomicBoolean MButton = new AtomicBoolean(false);
 	public static AtomicBoolean keyCommand = new AtomicBoolean(false);
 	public static AtomicBoolean appMenu = new AtomicBoolean(false);
-	public static String[] appFinder01 = new String[] {
-			"osascript",
-			"-e",
-			"tell application \"Finder\" to activate"
-	};
-    public static String[] appMail01 = new String[] {
-            "osascript",
-            "-e",
-            "tell application \"Mail\" to activate"
-    };
-	public static String[] appChrome01 = new String[] {
-            "osascript",
-            "-e",
-            "tell application \"Google Chrome\" to activate"
-	};
-    public static String[] appChrome02 = new String[] {
-			"open",
-			"/Applications/Google Chrome.app"
-    };
-    public static String[] appCode01 = new String[] {
-            "osascript",
-            "-e",
-            "tell application \"Visual Studio Code\" to activate"
-    };
-	public static String[] appCode02 = new String[] {
-			"open",
-			"/Applications/Visual Studio Code.app"
-	};
-	public static String[] appIntelliJ = new String[] {
-			"open",
-			"/Applications/IntelliJ IDEA.app"
-	};
-	public static String[] appDocker = new String[] {
-			"open",
-			"-a",
-			"Docker Desktop"
-	};
-    public static String[] appSourcetree01 = new String[] {
-            "osascript",
-            "-e",
-            "tell application \"Sourcetree\" to activate"
-    };
-
-	private static void hideAppMenu() {
-		appMenuWindow.moveSelector(0);
-		appMenuWindow.setVisible(false);
-		appMenu.set(false);
-	}
 
 	public static void main(String[] args) {
 		System.setProperty("file.encoding", "UTF-8");
