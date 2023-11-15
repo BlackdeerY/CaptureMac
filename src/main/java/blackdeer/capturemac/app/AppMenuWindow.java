@@ -205,6 +205,11 @@ public class AppMenuWindow extends JDialog {
             },
             new String[][] {
                     new String[] {
+                            "osascript",
+                            "-e",
+                            "tell application \"Moonlight\" to activate"
+                    },
+                    new String[] {
                             "open",
                             "/Applications/Moonlight.app"
                     }
