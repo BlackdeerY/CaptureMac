@@ -164,7 +164,7 @@ public class AppMenuWindow extends JDialog {
 //                    },
                     new String[] {
                             "open",
-                            "/Applications/Folk.app"
+                            "/Applications/Fork.app"
                     },
             },
             new String[][] {
