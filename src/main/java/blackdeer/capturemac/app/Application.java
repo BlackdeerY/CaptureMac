@@ -256,27 +256,29 @@ public class Application {
 			public void run() {
 				while (true) {
 					if (timing.compareAndSet(false, true)) {
-						Point mouse = MouseInfo.getPointerInfo().getLocation();
-						mousePosition[0] = mouse.x;
-						mousePosition[1] = mouse.y;
-						if (viewWindow.captureRegion.imageCaptured != null && moving == true && hiding == false) {
-							viewWindow.setVisible(true);
-							viewWindow.setLocation(mouse.x + 10, mouse.y + 20);
-						} else if (captureStart == true) {
-							viewWindow.captureRegion.setSize((int)(((float)(mouse.x - viewWindow.captureRegion.mouseCapture[0])) / viewWindow.captureRegion.forScale),
-									(int)(((float)(mouse.y - viewWindow.captureRegion.mouseCapture[1])) / viewWindow.captureRegion.forScale));
-						}
-						try {
-							sleep(100);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						while (true) {
-							if (timing.compareAndSet(true, false)) {
-								break;
-							}
-						}
+                        PointerInfo pointerInfo = MouseInfo.getPointerInfo();
+                        if (pointerInfo != null) {
+                            Point mouse = pointerInfo.getLocation();
+                            mousePosition[0] = mouse.x;
+                            mousePosition[1] = mouse.y;
+                            if (viewWindow.captureRegion.imageCaptured != null && moving == true && hiding == false) {
+                                viewWindow.setVisible(true);
+                                viewWindow.setLocation(mouse.x + 10, mouse.y + 20);
+                            } else if (captureStart == true) {
+                                viewWindow.captureRegion.setSize((int)(((float)(mouse.x - viewWindow.captureRegion.mouseCapture[0])) / viewWindow.captureRegion.forScale),
+                                        (int)(((float)(mouse.y - viewWindow.captureRegion.mouseCapture[1])) / viewWindow.captureRegion.forScale));
+                            }
+                            try {
+                                sleep(100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            while (true) {
+                                if (timing.compareAndSet(true, false)) {
+                                    break;
+                                }
+                            }
+                        }
 					}
 				}
 			};
