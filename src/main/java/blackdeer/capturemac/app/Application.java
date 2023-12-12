@@ -85,32 +85,49 @@ public class Application {
 			// 10: Windows LCtrl + LAlt
 			// 40966: Mac LCtrl + LCommand
 			// 1310729: Mac VNC LCtrl + LCommand
-			if(captureStart == false && (mod == 6 || mod == 40966)) {
-				if(viewWindow.captureRegion.imageCaptured == null && captureStart == false) {
-					viewWindow.captureRegion.mouseCapture[0] = mousePosition[0];
-					viewWindow.captureRegion.mouseCapture[1] = mousePosition[1];
-					viewWindow.captureRegion.forScale = (float)(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth())
-							/ (float)(Toolkit.getDefaultToolkit().getScreenSize().getWidth());
-					viewWindow.captureRegion.setLocation((int)((float)(viewWindow.captureRegion.mouseCapture[0]) / viewWindow.captureRegion.forScale),
-							(int)((float)(viewWindow.captureRegion.mouseCapture[1]) / viewWindow.captureRegion.forScale));
-					viewWindow.captureRegion.setVisible(true);
-					captureStart = true;
-				} else if (viewWindow.captureRegion.imageCaptured != null && captureStart == false && hiding == true) {
-					viewWindow.captureRegion.imageCaptured = null;
-					viewWindow.image_View.setSize(0, 0);
-					viewWindow.setSize(0, 0);
-					viewWindow.setLocation(-1, -1);
-					viewWindow.setVisible(false);
+//			if(captureStart == false && (mod == 6 || mod == 40966)) {
+			if(mod == 6 || mod == 40966) {
+                if (viewWindow.captureRegion.imageCaptured != null) {
+                    viewWindow.captureRegion.imageCaptured = null;
+                    viewWindow.image_View.setSize(0, 0);
+                    viewWindow.setSize(0, 0);
+                    viewWindow.setLocation(-1, -1);
+                    viewWindow.setVisible(false);
+                }
+                viewWindow.captureRegion.mouseCapture[0] = mousePosition[0];
+                viewWindow.captureRegion.mouseCapture[1] = mousePosition[1];
+                viewWindow.captureRegion.forScale = (float)(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth())
+                        / (float)(Toolkit.getDefaultToolkit().getScreenSize().getWidth());
+                viewWindow.captureRegion.setLocation((int)((float)(viewWindow.captureRegion.mouseCapture[0]) / viewWindow.captureRegion.forScale),
+                        (int)((float)(viewWindow.captureRegion.mouseCapture[1]) / viewWindow.captureRegion.forScale));
+                viewWindow.captureRegion.setVisible(true);
+                captureStart = true;
 
-					viewWindow.captureRegion.mouseCapture[0] = mousePosition[0];
-					viewWindow.captureRegion.mouseCapture[1] = mousePosition[1];
-					viewWindow.captureRegion.forScale = (float)(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth())
-							/ (float)(Toolkit.getDefaultToolkit().getScreenSize().getWidth());
-					viewWindow.captureRegion.setLocation((int)((float)(viewWindow.captureRegion.mouseCapture[0]) / viewWindow.captureRegion.forScale),
-							(int)((float)(viewWindow.captureRegion.mouseCapture[1]) / viewWindow.captureRegion.forScale));
-					viewWindow.captureRegion.setVisible(true);
-					captureStart = true;
-				}
+//				if(viewWindow.captureRegion.imageCaptured == null) {
+//					viewWindow.captureRegion.mouseCapture[0] = mousePosition[0];
+//					viewWindow.captureRegion.mouseCapture[1] = mousePosition[1];
+//					viewWindow.captureRegion.forScale = (float)(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth())
+//							/ (float)(Toolkit.getDefaultToolkit().getScreenSize().getWidth());
+//					viewWindow.captureRegion.setLocation((int)((float)(viewWindow.captureRegion.mouseCapture[0]) / viewWindow.captureRegion.forScale),
+//							(int)((float)(viewWindow.captureRegion.mouseCapture[1]) / viewWindow.captureRegion.forScale));
+//					viewWindow.captureRegion.setVisible(true);
+//					captureStart = true;
+//				} else if (viewWindow.captureRegion.imageCaptured != null && hiding == true) {
+//					viewWindow.captureRegion.imageCaptured = null;
+//					viewWindow.image_View.setSize(0, 0);
+//					viewWindow.setSize(0, 0);
+//					viewWindow.setLocation(-1, -1);
+//					viewWindow.setVisible(false);
+//
+//					viewWindow.captureRegion.mouseCapture[0] = mousePosition[0];
+//					viewWindow.captureRegion.mouseCapture[1] = mousePosition[1];
+//					viewWindow.captureRegion.forScale = (float)(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth())
+//							/ (float)(Toolkit.getDefaultToolkit().getScreenSize().getWidth());
+//					viewWindow.captureRegion.setLocation((int)((float)(viewWindow.captureRegion.mouseCapture[0]) / viewWindow.captureRegion.forScale),
+//							(int)((float)(viewWindow.captureRegion.mouseCapture[1]) / viewWindow.captureRegion.forScale));
+//					viewWindow.captureRegion.setVisible(true);
+//					captureStart = true;
+//				}
 			}
 		}
 

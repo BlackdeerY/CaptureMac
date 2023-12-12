@@ -152,8 +152,9 @@ public class AppMenuWindow extends JDialog {
             new String[][] {
                     new String[] {
                             "open",
-                            "-a",
-                            "Terminal"
+//                            "-a",
+//                            "Terminal"
+                            "/Applications/iTerm.app"
                     },
             },
             new String[][] {
