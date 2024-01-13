@@ -86,7 +86,7 @@ public class Application {
 			// 40966: Mac LCtrl + LCommand
 			// 1310729: Mac VNC LCtrl + LCommand
 //			if(captureStart == false && (mod == 6 || mod == 40966)) {
-			if(mod == 6 || mod == 40966) {
+			if (mod == 6 || mod == 40966) {
 				try {
 					if (viewWindow.captureRegion.imageCaptured != null) {
 						viewWindow.captureRegion.imageCaptured = null;
@@ -147,7 +147,7 @@ public class Application {
 					appMenuWindow.setVisible(false);
 				}
 			}
-			if(captureStart == true && mod != 6 && mod != 40966) {
+			if (captureStart == true && mod != 6 && mod != 40966) {
 				captureStart = false;
 				viewWindow.captureRegion.mouseCapture[2] = mousePosition[0];
 				viewWindow.captureRegion.mouseCapture[3] = mousePosition[1];
