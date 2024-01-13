@@ -78,6 +78,9 @@ public class Application {
 		public void nativeKeyPressed(NativeKeyEvent e) {
 			int mod = e.getModifiers();
 			int key = e.getRawCode();
+			if (mod == 2 && key == 59) {
+				LctrlTime = System.currentTimeMillis();
+			}
 			// command
 			if (key == 55) {
 				keyCommand.set(true);
@@ -138,6 +141,16 @@ public class Application {
 		public void nativeKeyReleased(NativeKeyEvent e) {
 			int mod = e.getModifiers();
 			int key = e.getRawCode();
+			if (mod == 0 && key == 59 && LctrlTime != 0) {
+				if (System.currentTimeMillis() < LctrlTime + 200) {
+					try {
+						Thread.sleep(150L);
+						Runtime.getRuntime().exec(changeInputSource);
+					} catch (Exception ex) {
+					}
+					LctrlTime = 0L;
+				}
+			}
 			// command
 			if (key == 55) {
 				keyCommand.set(false);
@@ -248,6 +261,12 @@ public class Application {
 	public static AtomicBoolean MButton = new AtomicBoolean(false);
 	public static AtomicBoolean keyCommand = new AtomicBoolean(false);
 	public static AtomicBoolean appMenu = new AtomicBoolean(false);
+	public static long LctrlTime = 0L;
+	public static String[] changeInputSource = new String[]{
+			"osascript",
+			"-e",
+			"tell application \"System Events\" to keystroke space using {control down}",
+	};
 
 	public static void main(String[] args) {
 		System.setProperty("file.encoding", "UTF-8");
