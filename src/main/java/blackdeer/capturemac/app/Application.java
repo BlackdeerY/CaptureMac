@@ -143,11 +143,11 @@ public class Application {
 			int key = e.getRawCode();
 			if (mod == 0 && key == 59 && LctrlTime != 0) {
 				if (System.currentTimeMillis() < LctrlTime + 200) {
-					try {
-						Thread.sleep(150L);
-						Runtime.getRuntime().exec(changeInputSource);
-					} catch (Exception ex) {
-					}
+//					try {
+//						Thread.sleep(150L);
+//						Runtime.getRuntime().exec(changeInputSource);
+//					} catch (Exception ex) {
+//					}
 					LctrlTime = 0L;
 				}
 			}
@@ -266,6 +266,7 @@ public class Application {
 			"osascript",
 			"-e",
 			"tell application \"System Events\" to keystroke space using {control down}",
+//			"tell application \"System Events\" to key code 102",
 	};
 
 	public static void main(String[] args) {
