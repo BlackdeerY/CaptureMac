@@ -2,7 +2,9 @@ package blackdeer.capturemac.app;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -22,6 +24,12 @@ import com.github.kwhat.jnativehook.mouse.*;
 public class Application {
 	@SuppressWarnings("unused")
 	private static class GlobalMouseListner implements NativeMouseListener {
+        private static String[] cmdForGetActiveAppName = new String[] {
+                "osascript",
+                "-e",
+                "tell application \"System Events\" to get name of (first process whose frontmost is true)"
+        };
+
 		@Override
 		public void nativeMouseClicked(NativeMouseEvent nativeEvent) {
 		}
@@ -29,6 +37,21 @@ public class Application {
 		public void nativeMousePressed(NativeMouseEvent nativeEvent) {
 			if (nativeEvent.getButton() == NativeMouseEvent.BUTTON3) {
 				if (captureStart == false && appMenu.get() == false && keyCommand.get() == true) {
+                    String activeAppName = "";
+                    try {
+                        Process process = Runtime.getRuntime().exec(cmdForGetActiveAppName);
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            activeAppName = line;
+                        }
+                        reader.close();
+                        process.waitFor();
+                    } catch (Exception ignored) {
+                    }
+                    if (activeAppName.equals("Moonlight") || activeAppName.equals("Microsoft Remote Desktop")) {
+                        return;
+                    }
 					appMenu.set(true);
 					appMenuWindow.setLocation(nativeEvent.getX() - (appMenuWindow.getWidth() / 2), nativeEvent.getY() - (appMenuWindow.getHeight() / 2));
 					AppMenuWindow.selected.set(0);
