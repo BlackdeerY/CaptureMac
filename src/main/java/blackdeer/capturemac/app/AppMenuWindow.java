@@ -314,7 +314,7 @@ public class AppMenuWindow extends JDialog {
     public AppMenuWindow() {
         container = this.getContentPane();
         container.setLayout(null);
-        container.setBackground(new Color(40, 40, 40));
+        container.setBackground(new Color(60, 60, 60));
 
         for (int i = 0; i < appNames.length; ++i) {
             JLabel icon = new JLabel();
