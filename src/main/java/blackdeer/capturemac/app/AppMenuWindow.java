@@ -311,11 +311,11 @@ public class AppMenuWindow extends JDialog {
                     new String[] {
                             "osascript",
                             "-e",
-                            "tell application \"iPhone 미러링\" to activate"
+                            "tell application \"iPhone Mirroring\" to activate"
                     },
                     new String[] {
                             "open",
-                            "/Applications/iPhone 미러링.app"
+                            "/Applications/iPhone Mirroring.app"
                     },
             },
     };
